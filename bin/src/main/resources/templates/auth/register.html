@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org" xmlns:layout=""
+      layout:decorate="~{layout/layout}" xmlns:sec>
+<head>
+    <meta charset="UTF-8">
+    <title>Register a new account</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body layout:fragment="content">
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg my-10 ">
+    <h1 class="text-3xl font-bold mb-6">Register a new account</h1>
+    <div class="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+        <span class="font-medium">hey !</span> Looks like you haven't logged into your account yet ? Login now .For the best experience.
+    </div>
+
+    <img class="h-auto w-full rounded-lg" th:src="@{/public/images/banner01.png}" alt="image description">
+
+    <form th:action="@{/register}" th:object="${create}" method="POST">
+        <div class="mb-4">
+            <label for="username" class="block text-gray-700">Username</label>
+            <input type="text" id="username" name="username" th:field="*{username}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" >
+            <div th:if="${#fields.hasErrors('username')}" class="text-red-500 text-sm">
+                <p th:each="err : ${#fields.errors('username')}" th:text="${err}"></p>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="email" class="block text-gray-700">Email</label>
+            <input type="email" id="email" name="email" th:field="*{email}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" >
+            <div th:if="${#fields.hasErrors('email')}" class="text-red-500 text-sm">
+                <p th:each="err : ${#fields.errors('email')}" th:text="${err}"></p>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="password" class="block text-gray-700">Password</label>
+            <input type="password" id="password" name="password" th:field="*{password}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" >
+            <div th:if="${#fields.hasErrors('password')}" class="text-red-500 text-sm">
+                <p th:each="err : ${#fields.errors('password')}" th:text="${err}"></p>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label for="confirmPassword" class="block text-gray-700">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-500" >
+            <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-red-500 text-sm">
+                <p th:each="err : ${#fields.errors('confirmPassword')}" th:text="${err}"></p>
+            </div>
+        </div>
+
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg" >
+            <span th:text="#{register}"></span>
+        </button>
+        <a th:href="@{/login}" class="px-4 py-2 text-yellow-500 rounded-lg" >
+            <span th:text="#{login}"></span>
+        </a>
+    </form>
+</div>
+</body>
+</html>

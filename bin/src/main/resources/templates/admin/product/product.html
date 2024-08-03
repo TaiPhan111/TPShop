@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"xmlns:th="http://wwww.thymeleaf.org" xmlns:layout=""
+      layout:decorate="~{layout/adminLayout}" xmlns:sec>
+<head>
+    <meta charset="UTF-8">
+    <title>Sản phẩm</title>
+</head>
+<body layout:fragment="content">
+<div class="overflow-x-auto">
+    <div class="flex items-center space-x-4 m-2">
+
+        <!-- Ô nhập liệu tìm kiếm -->
+        <form id="filterForm" th:action="@{/admin/product}" method="GET">
+
+            <div>
+                <label for="search" class="text-gray-700">Search:</label>
+                <input type="text" id="search" th:value="${param.}" name="search" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+
+            <!-- Bộ lọc theo active -->
+            <div>
+                <label for="activeFilter" class="text-gray-700">Active:</label>
+                <select id="activeFilter" name="active" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">All</option>
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Bộ lọc theo giá -->
+            <div>
+                <label for="priceFilter" class="text-gray-700">Price:</label>
+                <select id="priceFilter" name="price" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">All</option>
+                    <option value="asc">Low to High</option>
+                    <option value="desc">High to Low</option>
+                </select>
+            </div>
+
+            <!-- Bộ lọc theo danh mục -->
+            <div>
+                <label for="categoryFilter" class="text-gray-700">Category:</label>
+                <select id="categoryFilter" name="category" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">All</option>
+                    <option value="category1">Category 1</option>
+                    <option value="category2">Category 2</option>
+                    <!-- Thêm các lựa chọn danh mục khác nếu cần -->
+                </select>
+            </div>
+
+            <!-- Nút Lọc -->
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">Lọc</button>
+
+        </form>
+
+    </div>
+
+
+    <table class="min-w-full bg-white shadow-md rounded mb-4">
+        <thead>
+        <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <th class="py-3 px-6 text-left">Id</th>
+            <th class="py-3 px-6 text-left">Tên sản phẩm</th>
+            <th class="py-3 px-6 text-left">Thời gian tạo</th>
+            <th class="py-3 px-6 text-left">Giá</th>
+            <th class="py-3 px-6 text-left">Danh mục</th>
+            <th class="py-3 px-6 text-center">Trạng thái</th>
+
+        </tr>
+        </thead>
+        <tbody class="text-gray-600 text-sm font-light">
+        <!-- User data will be populated here -->
+        <tr th:each="product : ${page.content}">
+            <td class="py-3 px-6 text-left whitespace-nowrap" th:text="${product.id}"></td>
+            <td class="py-3 px-6 text-left" th:text="${product.name}"></td>
+            <td class="py-3 px-6 text-left" th:text="${product.createDate}"></td>
+            <td class="py-3 px-6 text-left" th:text="${product.price}"></td>
+            <td class="py-3 px-6 text-left" th:text="${product.category.name}"></td>
+
+
+            <td class="py-3 px-6 text-center flex">
+            <a th:href="@{/admin/product/update/{id}(id=${product.id})}" class="text-blue-600 hover:underline mr-3">Edit</a>
+
+            <form th:action="@{/admin/product/active/{id}(id=${product.id})}" method="get">
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="accent-pink-500" th:checked="${product.active}" onchange="this.form.submit()">
+                    <input type="hidden" name="active" th:value="${!product.active}">
+                </label>
+            </form>
+            </td>
+
+
+
+        </tr>
+
+        </tbody>
+    </table>
+    <div class="flex justify-center" th:if="${page.totalElements > 0}">
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <a th:if="${page.number > 0}" th:href="@{/admin/product(p=${page.number - 1},keywords=${param.keywords},orderByPrice=${param.orderByPrice})}"
+               class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">Previous</a>
+            <span th:each="pageNum : ${#numbers.sequence(0, page.totalPages - 1)}">
+            <a th:href="@{/admin/product(p=${pageNum},keywords=${param.keywords},orderByPrice=${param.orderByPrice})}"
+               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+               th:classappend="${pageNum == page.number} ? 'bg-gray-200' : ''" th:text="${pageNum + 1}">1</a>
+        </span>
+            <a th:if="${page.number < page.totalPages - 1}" th:href="@{/admin/product(p=${page.number + 1},keywords=${param.keywords},orderByPrice=${param.orderByPrice})}"
+               class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">Next</a>
+        </nav>
+    </div>
+</div>
+
+<!-- Add New User Button -->
+<div class="flex justify-end">
+    <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500">Add New User</a>
+</div>
+
+
+</body>
+</html>

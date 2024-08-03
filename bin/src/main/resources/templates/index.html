@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"xmlns:th="http://wwww.thymeleaf.org" xmlns:layout=""
+      layout:decorate="~{layout/layout}" xmlns:sec>
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ</title>
+</head>
+<body layout:fragment="content">
+
+<div th:replace="~{/fragment/banner2 :: banner2}"></div>
+
+<div th:replace="~{/fragment/topSeller :: topSeller}"></div>
+<div th:replace="~{/fragment/categories :: categories}"></div>
+<div th:replace="~{/fragment/justForYou :: justForYou}"></div>
+
+
+
+</body>
+</html>

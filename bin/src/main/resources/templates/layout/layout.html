@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Shopping Online</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/hung1001/font-awesome-pro@4cac1a6/css/all.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.11.1/sweetalert2.css" integrity="sha512-n1PBkhxQLVIma0hnm731gu/40gByOeBjlm5Z/PgwNxhJnyW1wYG8v7gPJDT6jpk0cMHfL8vUGUVjz3t4gXyZYQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<body class="bg-gray-100">
+<!-- Navbar -->
+<nav class="bg-white shadow">
+    <div class="container mx-auto px-6 py-3">
+        <div class="flex items-center justify-between">
+            <div class="text-xl font-semibold text-gray-700">
+                <a th:href="@{/}" class="text-gray-800 hover:text-gray-600"> <i class="fad fa-bags-shopping"></i> Shopping Online </a>
+            </div>
+            <div class="flex space-x-4 items-center justify-between">
+                <a th:href="@{/}" class="text-gray-800 hover:text-gray-600" th:text="#{home}">Home</a>
+                <a th:href="@{/about}" class="text-gray-800 hover:text-gray-600" th:text="#{about}">About</a>
+                <a th:href="@{/product}" class="text-gray-800 hover:text-gray-600">Products</a>
+
+
+
+                <div class="relative" id="categories-dropdown">
+                    <button class="flex items-center text-gray-800 hover:text-gray-600 focus:outline-none">
+                        <span th:text="#{Categories}">Categories</span>
+                        <svg class="ml-1 h-5 w-5 " xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                        <div th:each="category : ${categories}">
+                            <a th:href="@{/product(category=${category.id})}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:text="${category.name}">Category</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative" id="account-dropdown">
+                    <button class="flex items-center text-gray-800 hover:text-gray-600 focus:outline-none">
+                        <span th:text="#{Account}">Account</span>
+                        <svg class="ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg hidden">
+                        <a th:href="@{/login}"  class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:unless="${session.user}">
+                            <i class="fad fa-sign-in text-yellow-500"></i> <span th:text="#{login}"></span>
+                        </a>
+                        <a th:href="@{/register}"  class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:unless="${session.user}">
+                            <i class="fad fa-user-plus text-yellow-500"></i><span th:text="#{register}"></span>
+                        </a>
+
+                        <a th:href="@{/account}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:if="${session.user}">
+                            <i class="fad fa-user-circle text-yellow-500"></i> <span th:text="#{Account}"></span>
+                        </a>
+                        <a th:href="@{/admin}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:if="${session.user != null and session.user.admin}">
+                            <i class="fad fa-users-crown text-yellow-500"></i>  <span th:text="#{Admin}"></span>
+                        </a>
+                        <a th:href="@{/logout}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:if="${session.user}">
+                            <i class="fad fa-sign-out text-yellow-500"></i> <span th:text="#{logout}"></span>
+                        </a>
+                        <hr>
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" >
+                            <i class="fad fa-language text-yellow-500"></i> <span th:text="#{languages}"></span>
+                        </a>
+                        <a href="?lang=en" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:text="#{English}">English</a>
+                        <a href="?lang=vi" class="block px-4 py-2 text-gray-800 hover:bg-gray-100" th:text="#{Vietnamese}">Tiếng Việt</a>
+                    </div>
+                </div>
+                <form action="/index" th:action="@{/product}" method="get"
+                      class="flex justify-between items-center">
+                    <input name="keywords" th:value="${keywords}" th:placeholder="#{Search}" class="w-3/4 py-2 px-4 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+                    <button type="submit" class="w-1/4 py-2 px-1 ml-3  text-blue-500 rounded-md border " >
+                        <i class="fad fa-search"></i>
+                    </button>
+                </form>
+
+                <a class="text-gray-800 hover:text-gray-600">
+                    <button type="button" onclick="openCart()" class="relative inline-flex items-center p-3 text-sm font-medium text-center text-yellow  rounded-lg hover:bg-blue-800 hover:text-white focus:ring-4 focus:outline-none border focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <i class="fad fa-shopping-cart"></i>
+                        <span class="sr-only">Notifications</span>
+                        <div id="updateCount" class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-3 -end-[-2] dark:border-gray-900">20</div>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+<div th:replace="~{/fragment/notification :: notification}"></div>
+
+<!--content-->
+<section layout:fragment="content"></section>
+<!--content-->
+
+<!-- Footer -->
+<footer class="bg-white shadow mt-8">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-gray-700">© 2024 Shop. All rights reserved.</div>
+            <div class="flex space-x-4">
+                <a href="#" class="text-gray-700 hover:text-gray-900">Privacy Policy</a>
+                <a href="#" class="text-gray-700 hover:text-gray-900">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div th:replace="~{/fragment/cart :: cart}"></div>
+<div th:replace="~{/fragment/sweetalert2 :: sweetalert2}"></div>
+<script>
+    document.addEventListener('click', function(event) {
+        const accountDropdownButton = document.querySelector('#account-dropdown button');
+        const accountDropdownMenu = document.querySelector('#account-dropdown div');
+        const categoriesDropdownButton = document.querySelector('#categories-dropdown button');
+        const categoriesDropdownMenu = document.querySelector('#categories-dropdown div');
+
+        if (accountDropdownButton.contains(event.target)) {
+            accountDropdownMenu.classList.toggle('hidden');
+        } else if (!accountDropdownMenu.contains(event.target)) {
+            accountDropdownMenu.classList.add('hidden');
+        }
+
+        if (categoriesDropdownButton.contains(event.target)) {
+            categoriesDropdownMenu.classList.toggle('hidden');
+        } else if (!categoriesDropdownMenu.contains(event.target)) {
+            categoriesDropdownMenu.classList.add('hidden');
+        }
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.11.1/sweetalert2.min.js" integrity="sha512-Ozu7Km+muKCuIaPcOyNyW8yOw+KvkwsQyehcEnE5nrr0V4IuUqGZUKJDavjSCAA/667Dt2z05WmHHoVVb7Bi+w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just For You REST API</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css">
+</head>
+<body th:fragment="justForYou">
+
+<div class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl tracking-widest text-black font-bold text-center mb-8"> <i class="fad fa-tags rounded-lg text-yellow-900"></i> Just for you </h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="productContainer">
+        <!-- Products will be dynamically added here -->
+    </div>
+    <div id="loading" class="hidden text-center">Loading...</div>
+    <button id="loadMoreButton" class="mt-2 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600" onclick="loadMore()">Load More</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    var page = 0;
+    var loading = false;
+
+    function loadMore() {
+        if (loading) return;
+
+        loading = true;
+        document.getElementById("loadMoreButton").style.display = "none";
+        document.getElementById("loading").style.display = "block";
+
+        axios.get('/api/v1/products', {
+            params: {
+                page: ++page
+            }
+        })
+            .then(function (response) {
+                var products = response.data.content;
+                var container = document.getElementById("productContainer");
+
+                products.forEach(function(product) {
+                    var productCard = `
+                    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+                        <div class="bg-cover bg-center h-56 p-4" style="background-image: url('https://via.placeholder.com/150')">
+                        </div>
+                        <div class="p-4">
+                            <p class="uppercase tracking-wide text-sm font-bold text-gray-700">${product.name}</p>
+                            <p class="text-gray-700">$${product.price}</p>
+                            <button class="mt-2 bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-600">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                    container.insertAdjacentHTML('beforeend', productCard);
+                });
+
+                loading = false;
+                document.getElementById("loadMoreButton").style.display = "block";
+                document.getElementById("loading").style.display = "none";
+            })
+            .catch(function (error) {
+                console.log(error);
+                loading = false;
+                document.getElementById("loadMoreButton").style.display = "block";
+                document.getElementById("loading").style.display = "none";
+            });
+    }
+    loadMore();
+</script>
+
+</body>
+</html>

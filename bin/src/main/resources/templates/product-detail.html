@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org" xmlns:layout=""
+      layout:decorate="~{layout/layout}" xmlns:sec>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.name}">Product Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body layout:fragment="content">
+<div class="flex">
+    <!-- Phần bên trái -->
+    <div class="w-3/12 bg-gray-200 p-4">
+        <h2 class="text-lg font-bold mb-2">Tìm kiếm</h2>
+        <form action="/index"  th:action="@{/product}" method="get"
+              class="flex justify-between items-center mb-2">
+            <input name="keywords" th:value="${keywords}" th:placeholder="#{Search}" class="w-3/4 py-2 px-4 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500">
+            <button type="submit" class="w-1/4 py-2 px-4 ml-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600" >
+                <span ></span> <i class="fad fa-search"></i>
+            </button>
+        </form>
+        <hr>
+        <h2 class="text-lg font-bold mb-2">Danh mục</h2>
+        <ul  th:each="category : ${categories}">
+            <li class="mb-2" > <a  th:text="${category.name}" th:href="@{/product?(category=${category.id})}" class="font-medium text-blue-600 dark:text-yellow-500 hover:underline"></a> </li>
+        </ul>
+        <h2 class="text-lg font-bold mb-2">Sắp xếp</h2>
+        <select onchange="location = this.value;" class="w-full p-2 border border-gray-300 rounded">
+            <option value="#" disabled selected>Chọn sắp xếp</option>
+            <option th:value="@{/product?(p=${param.p},keywords=${param.keywords}, orderByPrice=1)}">Giá tăng dần</option>
+            <option th:value="@{/product?(p=${param.p},keywords=${param.keywords}, orderByPrice=0)}">Giá giảm dần</option>
+
+        </select>
+    </div>
+    <!-- Phần bên phải -->
+    <div class="container mx-auto p-4">
+        <nav class="flex m-5" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                <li class="inline-flex items-center">
+                    <a href="/" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                        <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+                        </svg>
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                        </svg>
+                        <a href="/product" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Products</a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                        </svg>
+                        <a th:href="@{/product/{id}(id=${product.category.id})}" th:text="${product.category.name}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Products</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                        </svg>
+                        <span class="ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400" th:text="${product.name}"></span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h1 class=" mb-4 flex items-center justify-between" >
+                <span class="text-3xl font-bold" th:text="${product.name}"></span>
+                <span >
+                    <i class="fad fa-clock"></i> <span  th:text="${product.createDate}"></span>
+                </span>
+            </h1>
+            <p class="mb-4" th:utext="${product.description}">Product Description</p>
+            <p class="text-xl font-semibold mb-4" >
+                <i class="fas fa-usd-circle mr-2 text-yellow-300"></i> <span th:text="'Price : '+${product.price}"></span>
+            </p>
+            <!-- Các thông tin khác của sản phẩm có thể hiển thị ở đây -->
+            <div class="flex items-center mb-4">
+                <img class="w-48 h-48 object-cover rounded-lg" th:src="@{/public/images/banner01.png}" alt="Product Image">
+            </div>
+            <div class="flex items-center justify-end mt-4">
+                <button th:onclick="'addToCart(' + ${product.id} + ')'"  class=" mr-3 py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    <i class="fad fa-cart-arrow-down"></i> Add to cart
+                </button>
+                <a href="/product" class="py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    <i class="fal fa-shopping-bag"></i> Back to Product List
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{/fragment/similar-product :: similar-product}"></div>
+
+    </div>
+
+</div>
+</body>
+</html>

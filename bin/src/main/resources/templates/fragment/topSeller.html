@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Top Seller</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100" th:fragment="topSeller">
+<div class="container mx-auto py-8 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
+  <h1 class="text-3xl tracking-widest text-white font-bold text-center mb-8"> <i class="fad fa-tags rounded-lg text-yellow-900"></i> Top 10 Best Sellers </h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 px-6 gap-3">
+    <!-- Loop through top sellers -->
+    <div th:each="product : ${page.content}" class="block max-w-sm rounded-lg bg-white bg-cover p-6 shadow-lg dark:bg-neutral-700"
+         th:style="'background-image: url(' + ${product.image} + ');'">
+      <h5 class="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50"
+          th:text="${product.name}">Product Name</h5>
+
+      <p class="text-lg font-bold text-neutral-800 dark:text-neutral-50"
+         th:text="'$' + ${product.price}">Product Price</p>
+      <div class="flex items-center justify-end mt-4">
+        <a th:href="@{/product/{id}(id=${product.id})}" class="mr-3 text-blue-700 px-4 py-2 rounded-lg bg-gray-100 hover:text-blue-900 ">
+          <span>View Details</span>
+        </a>
+        <button th:onclick="'addToCart(' + ${product.id} + ')'"
+                class="text-blue-700 px-4 py-2 rounded-lg bg-gray-100 hover:text-blue-900">
+          <i class="fad fa-cart-plus rounded-lg w-100 bg-yellow-300"></i>
+        </button>
+      </div>
+    </div>
+    <div th:if="${page.totalElements <=0}">
+      <p class="text-gray-700">Not data</p>
+    </div>
+    <!-- End of loop -->
+  </div>
+</div>
+</body>
+</html>

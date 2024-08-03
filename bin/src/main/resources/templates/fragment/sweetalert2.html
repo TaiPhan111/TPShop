@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://wwww.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>sweetalert2</title>
+</head>
+<body>
+ <script  th:fragment="sweetalert2">
+     function showMessage(title, text, icon) {
+         Swal.fire({
+             title: title,
+             text: text,
+             icon: icon,
+         });
+     }
+
+
+
+
+ </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html  lang="en" xmlns:th="http://wwww.thymeleaf.org" xmlns:layout=""
+       layout:decorate="~{layout/layout}" xmlns:sec>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100" layout:fragment="content">
+
+<!--tra cứu -->
+<div id="alert-additional-content-5" class="p-4 mx-3 border border-gray-300 rounded-lg bg-gray-50 dark:border-gray-600 dark:bg-gray-800" role="alert">
+    <div class="flex items-center">
+        <i class="far fa-scanner-touchscreen"></i>
+        <span class="sr-only">Info</span>
+        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-300">&nbsp; Tra cứu thông tin đơn hàng của của bạn</h3>
+    </div>
+    <div class="mt-2 mb-4 text-sm text-gray-800 dark:text-gray-300">
+        Tra cứu thông tin đơn hàng của của bạn với <code> Mã đơn hàng </code> và <code> số điện thoại</code>
+    </div>
+    <div class="flex">
+        <a th:href="@{/search-order}"  class=" mr-2 text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-xs px-3 py-1.5 me-2 text-center inline-flex items-center dark:bg-gray-600 dark:hover:bg-gray-500 dark:focus:ring-gray-800">
+            <i class="fas fa-search-location"></i>
+            Tra cứu
+        </a>
+        <a th:href="@{/product}" class="text-gray-800 bg-transparent border border-gray-700 hover:bg-gray-800 hover:text-white focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center dark:border-gray-600 dark:hover:bg-gray-600 dark:focus:ring-gray-800 dark:text-gray-300 dark:hover:text-white" data-dismiss-target="#alert-additional-content-5" aria-label="Close">
+           Tiếp tục mua sắm
+        </a>
+    </div>
+</div>
+<!--kết thúc tra cứu -->
+
+<div class="container mx-auto  flex p-3">
+    <!-- Product list -->
+    <div class="w-2/4 bg-white rounded-md shadow-md p-6 mr-2">
+        <h1 class="text-2xl font-semibold mb-4">  <i class="fad fa-shopping-cart"></i> Your Cart</h1>
+        <!-- Product details -->
+        <div class="border-b border-gray-300 mb-6 pb-6">
+            <div class="flex justify-between items-center mb-4" th:each="item : ${cart}">
+                <div class="flex items-center" >
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQetgUM2uQNvbSmfkccBsxq0Dn_IBqDPL198A&s" alt="Product Image" class="w-24 h-24 rounded-md mr-4">
+                    <div>
+                        <h2 class="text-lg font-semibold" th:text="${item.name}">...</h2>
+                        <form th:action="@{/cart/update/{id}(id=${item.id})}" method="post">
+                            <input type="hidden" name="id" th:value="${item.id}"/>
+                            <input name="qty" type="number" min="1" th:value="${item.qty}" onblur="this.form.submit()"/>
+                            <button type="submit">Update</button>
+                        </form>
+                        <p th:text="${item.qty != null && item.price != null ? item.qty * item.price : null}"></p>
+
+                    </div>
+                </div>
+
+                <p><a th:href="@{/cart/remove/{id}(id=${item.id})}" class="text-white px-4 py-2 text-decoration-none rounded bg-red-600">
+                    Remove <i class="fas fa-trash-alt text-white"></i></a></p>
+            </div>
+            <a th:href="@{/cart/clear}" class="text-red-500">Clear All</a>
+        </div>
+        <!-- More product details... -->
+
+        <!-- Total -->
+        <div class="flex justify-between">
+            <h2 class="text-lg font-semibold">Total:</h2>
+            <p class="text-xl font-semibold" th:text="${amount}">$100</p>
+        </div>
+    </div>
+
+    <!-- Checkout form -->
+    <div class="w-2/4 bg-white rounded-md shadow-md p-6">
+        <h1 class="text-2xl font-semibold mb-4"><i class="fal fa-scanner-keyboard"></i>  Checkout </h1>
+        <div class="my-3" th:if="${session.user}">
+            <input type="checkbox" id="useAddressFromAccount" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
+            <label for="useAddressFromAccount" class="ml-2 mb-3">Sử dụng địa chỉ từ tài khoản</label>
+            <div class="m-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                <span class="font-medium" id="error"></span>
+            </div>
+        </div>
+
+        <form id="checkoutForm" action="#" method="post">
+            <div class="mb-4">
+                <label for="fullname" class="block font-semibold mb-2"><i class="far fa-user-alt"></i> FullName :</label>
+                <input type="text" id="fullname" name="fullname" class="border border-gray-300 rounded-md w-full py-2 px-4" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="address" class="block font-semibold mb-2"><i class="fad fa-map-marked-alt"></i> Address :</label>
+                <input type="text" id="address" name="address" class="border border-gray-300 rounded-md w-full py-2 px-4" required>
+            </div>
+            <div class="mb-4">
+                <label for="phone" class="block font-semibold mb-2"><i class="fad fa-phone"></i> Phone :</label>
+                <input type="number" id="phone" name="phone" class="border border-gray-300 rounded-md w-full py-2 px-4 " required>
+            </div>
+            <div class="mb-4">
+                <label for="payment" class="block font-semibold mb-2"><i class="far fa-receipt"></i> Payment Method :</label>
+                <select name="payment" id="payment" class="border border-gray-300 rounded-md w-full py-2 px-4">
+                    <option value="bank">Bank Transfer <i class="fas fa-credit-card-front"></i></option>
+                    <option value="cash">Cash on Delivery  <i class="far fa-money-bill"></i></option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">Checkout</button>
+        </form>
+    </div>
+
+</div>
+
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    document.getElementById('useAddressFromAccount').addEventListener('change', function() {
+        if (this.checked) {
+            fillFormFromSession();
+        } else {
+            document.getElementById('address').value = "";
+            document.getElementById('phone').value = "";
+            document.getElementById('fullname').value = "";
+        }
+    });
+
+    function fillFormFromSession() {
+        var address = /*[[${session.user != null ? session.user.address : ''}]]*/ '';
+        var phone =/*[[${session.user != null ? session.user.phone : ''}]]*/ '';
+        var fullname =/*[[${session.user != null ? session.user.fullname : ''}]]*/ '';
+        // Kiểm tra nếu địa chỉ từ session không rỗng hoặc không phải là null
+        if (address !== '' && address !== null) {
+            document.getElementById('address').value = address;
+        }
+
+        // Kiểm tra nếu số điện thoại từ session không rỗng hoặc không phải là null
+        if (phone !== '' && phone !== null) {
+            document.getElementById('phone').value = phone;
+        }
+
+        if (fullname !== '' && fullname !== null) {
+            document.getElementById('fullname').value = fullname;
+        }
+    }
+
+    /*]]>*/
+</script>
+</body>
+</html>
